@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="Invoice.API/InvoiceSystem.API.csproj" />
-  <Project Path="Invoice.Application/InvoiceSystem.Application.csproj" />
-  <Project Path="Invoice.Core/InvoiceSystem.Core.csproj" />
-  <Project Path="Invoice.Infrastructure/InvoiceSystem.Infrastructure.csproj" />
+  <Project Path="InvoiceSystem.API/InvoiceSystem.API.csproj" />
+  <Project Path="InvoiceSystem.Application/InvoiceSystem.Application.csproj" />
+  <Project Path="InvoiceSystem.Core/InvoiceSystem.Core.csproj" />
+  <Project Path="InvoiceSystem.Infrastructure/InvoiceSystem.Infrastructure.csproj" />
 </Solution>

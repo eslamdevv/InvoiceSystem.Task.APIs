@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Invoice.Application\InvoiceSystem.Application.csproj" />
-    <ProjectReference Include="..\Invoice.Infrastructure\InvoiceSystem.Infrastructure.csproj" />
+    <ProjectReference Include="..\InvoiceSystem.Application\InvoiceSystem.Application.csproj" />
+    <ProjectReference Include="..\InvoiceSystem.Infrastructure\InvoiceSystem.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
