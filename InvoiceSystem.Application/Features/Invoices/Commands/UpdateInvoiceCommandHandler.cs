@@ -57,7 +57,7 @@ namespace InvoiceSystem.Application.Features.Invoices.Commands
 
             //Remove Deleted
             var incomingIds = incoming.Where(x => x.Id.HasValue).Select(x => x.Id!.Value).ToHashSet();
-            var toRemove = invoice.Items.Where(x => !incomingIds.Contains(x.Id)).ToList();
+            var toRemove = invoice.Items.Where(x => x.Id !=0 && !incomingIds.Contains(x.Id)).ToList();
             foreach (var item in toRemove)
                 invoice.Items.Remove(item);
 

@@ -1,0 +1,12 @@
+﻿using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace InvoiceSystem.Application.Features.Invoices.Commands
+{
+    public record DeleteInvoiceCommand(int id) : IRequest<bool>;
+
+}
