@@ -60,8 +60,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
 
-//app.UseStatusCodePagesWithReExecute("/Errors/{0}");
-
 app.UseStatusCodePages(async context =>
 {
     var response = context.HttpContext.Response;
