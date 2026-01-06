@@ -13,6 +13,8 @@ using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using InvoiceSystem.API.ErrorsResponse;
+using MediatR;
+using InvoiceSystem.Application.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +32,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyMarker).Assembly));
 builder.Services.AddAutoMapper(M => M.AddProfile(typeof(MappingProfile)));
-builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+builder.Services.AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly);
 builder.Services.AddTransient<ExceptionMiddleware>();
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(ValidationBehavior<,>)
+);
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -54,13 +60,22 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
 
+//app.UseStatusCodePagesWithReExecute("/Errors/{0}");
+
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+
+    response.ContentType = "application/json";
+    await response.WriteAsJsonAsync(new ApiResponse(response.StatusCode));
+
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwaggerUI(options => { options.SwaggerEndpoint("/openapi/v1.json", "v1"); });
 }
-
-app.UseStatusCodePagesWithReExecute("/Errors/{0}");
 
 app.UseHttpsRedirection();
 

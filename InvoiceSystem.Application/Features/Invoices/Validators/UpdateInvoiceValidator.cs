@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using InvoiceSystem.Application.Features.Invoices.Commands;
 using InvoiceSystem.Application.Features.Invoices.Models;
 using System;
 using System.Collections.Generic;
@@ -8,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace InvoiceSystem.Application.Features.Invoices.Validators
 {
-    public class UpdateInvoiceValidator : AbstractValidator<UpdateInvoiceRequest>
+    public class UpdateInvoiceValidator : AbstractValidator<UpdateInvoiceCommand>
     {
         public UpdateInvoiceValidator()
         {
-            RuleFor(x => x.InvoiceNumber).NotEmpty().MaximumLength(30);
-            RuleFor(x => x.Date).NotEmpty();
+            RuleFor(x => x.Request.InvoiceNumber).NotEmpty().MaximumLength(30);
+            RuleFor(x => x.Request.Date).NotEmpty();
 
-            RuleFor(x => x.Items).NotNull().Must(x => x.Count > 0)
+            RuleFor(x => x.Request.Items).NotNull().Must(x => x.Count > 0)
                 .WithMessage("Invoice must have at least 1 item.");
 
-            RuleForEach(x => x.Items).SetValidator(new UpdateInvoiceItemValidator());
+            RuleForEach(x => x.Request.Items).SetValidator(new UpdateInvoiceItemValidator());
         }
     }
     public class UpdateInvoiceItemValidator : AbstractValidator<UpdateInvoiceItemRequest>

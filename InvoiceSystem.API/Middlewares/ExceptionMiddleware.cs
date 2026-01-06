@@ -1,4 +1,6 @@
-﻿using InvoiceSystem.API.ErrorsResponse;
+﻿using FluentValidation;
+using InvoiceSystem.API.ErrorsResponse;
+//using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace InvoiceSystem.API.Middlewares
@@ -19,6 +21,21 @@ namespace InvoiceSystem.API.Middlewares
             {
                 await _next.Invoke(httpContext);
             }
+            catch (ValidationException ex)
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                httpContext.Response.ContentType = "application/json";
+
+                var errors = ex.Errors
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                await httpContext.Response.WriteAsJsonAsync(new
+                {
+                    statusCode = 400,
+                    errors
+                });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
@@ -33,6 +50,7 @@ namespace InvoiceSystem.API.Middlewares
                 await httpContext.Response.WriteAsJsonAsync(response);
 
             }
+
         }
     }
 }
