@@ -11,6 +11,8 @@ using InvoiceSystem.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
+using InvoiceSystem.API.ErrorsResponse;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,22 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Assem
 builder.Services.AddAutoMapper(M => M.AddProfile(typeof(MappingProfile)));
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 builder.Services.AddTransient<ExceptionMiddleware>();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = (actionResult) =>
+    {
+        var errors = actionResult.ModelState.Where(parameter => parameter.Value.Errors.Count() > 0)
+                                            .SelectMany(parameter => parameter.Value.Errors)
+                                            .Select(error => error.ErrorMessage)
+                                            .ToList();
+        var response = new ApiValidationErrorResponse()
+        {
+            Errors = errors
+        };
+        return new BadRequestObjectResult(response);
+    };
+});
 
 var app = builder.Build();
 
