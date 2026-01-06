@@ -18,6 +18,23 @@ using InvoiceSystem.Application.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var dbProvider = builder.Configuration["DbProvider"]; // "SqlServer" or "Postgres"
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    if (dbProvider == "Postgres")
+    {
+        var pg = Environment.GetEnvironmentVariable("DATABASE_URL");
+        // Render DATABASE_URL sometimes needs SSL mode
+        // Npgsql supports it as-is
+        options.UseNpgsql(pg);
+    }
+    else
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -56,6 +73,12 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
