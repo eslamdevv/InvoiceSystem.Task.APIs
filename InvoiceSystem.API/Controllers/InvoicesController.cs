@@ -42,39 +42,28 @@ namespace InvoiceSystem.API.Controllers
         public async Task<ActionResult<InvoiceDTO>> Create([FromBody] CreateInvoiceRequest request, CancellationToken ct)
         {
             var id = await _mediator.Send(new CreateInvoiceCommand(request), ct);
-            return CreatedAtAction(nameof(GetById), new { id }, new { id });
+            var invoice = await _mediator.Send(new GetInvoiceByIdQuery(id), ct);
+            return CreatedAtAction(nameof(GetById), new { id }, invoice);
         }
 
         [HttpPut("{id:int}")]
         [EndpointSummary("Update Invoice")]
-        [ProducesResponseType(typeof(Ok), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(NoContent), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<bool>> Update(int id, [FromBody] UpdateInvoiceRequest request, CancellationToken ct)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateInvoiceRequest request, CancellationToken ct)
         {
             var ok = await _mediator.Send(new UpdateInvoiceCommand(id, request), ct);
-            return ok ?
-                Ok(new
-                {
-                    statuscode = StatusCodes.Status200OK,
-                    message = "Invoice Updated!"
-                }) :
-                NotFound(new ApiResponse(StatusCodes.Status404NotFound));
+            return ok ? NoContent() : NotFound(new ApiResponse(StatusCodes.Status404NotFound));
         }
 
         [HttpDelete("{id:int}")]
         [EndpointSummary("Delete Invoice")]
-        [ProducesResponseType(typeof(Ok), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(NoContent), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<bool>> Delete(int id, CancellationToken ct)
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
             var ok = await _mediator.Send(new DeleteInvoiceCommand(id), ct);
-            return ok ?
-               Ok(new
-               {
-                   statuscode = StatusCodes.Status200OK,
-                   message = "Invoice Deleted!"
-               }) :
-               NotFound(new ApiResponse(StatusCodes.Status404NotFound));
+            return ok ? NoContent() : NotFound(new ApiResponse(StatusCodes.Status404NotFound));
         }
     }
 }
